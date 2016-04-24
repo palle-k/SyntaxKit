@@ -22,6 +22,8 @@
 		E67734FC1CCC0C0200A915CF /* SKLanguage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLanguage.swift; sourceTree = "<group>"; };
 		E68A36241CCD09B200D85497 /* Java.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Java.json; sourceTree = "<group>"; };
 		E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLayoutManager.swift; sourceTree = "<group>"; };
+		E6AD00731CCD2A79002C94A4 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		E6AD00741CCD2B79002C94A4 /* license */ = {isa = PBXFileReference; lastKnownFileType = text; path = license; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +40,8 @@
 		E67734C91CCC0B8200A915CF = {
 			isa = PBXGroup;
 			children = (
+				E6AD00741CCD2B79002C94A4 /* license */,
+				E6AD00731CCD2A79002C94A4 /* readme.md */,
 				E67734D51CCC0B8200A915CF /* SyntaxKit */,
 				E67734D41CCC0B8200A915CF /* Products */,
 			);
