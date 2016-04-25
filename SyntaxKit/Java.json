@@ -1,6 +1,7 @@
 {
 	"name" : "Java",
 	"suffix" : "java",
+	"appearance" : "DefaultAppearanceDark",
 	"features" :
 	[
 		{
@@ -8,56 +9,64 @@
 	 "pattern" : "(\\b)(abstract|break|case|catch|continue|default|do|else|extends|final|finally|for|if|implements|instanceof|native|new|private|protected|public|return|static|switch|synchronized|throw|throws|transient|try|volatile|while|package|import|boolean|byte|char|class|double|float|int|interface|long|short|void|assert|strictfp|false|null|super|this|true|goto|const|enum)(\\b)",
 	 "red" : 0.8,
 	 "green" : 0.0,
-	 "blue" : 0.5
+	 "blue" : 0.5,
+	 "color" : "SKColorKeywordKey"
 		},
 		{
 	 "key" : "SpecialCharacters",
 	 "pattern" : ";|\\{|\\}|\\(|\\)|\\.|=|:|\\[|\\]|,|<|>",
 	 "red" : 0.7,
 	 "green" : 0.7,
-	 "blue" : 0.7
+	 "blue" : 0.7,
+	 "color" : "SKColorControlCharacterKey"
 		},
 		{
 	 "key" : "Annotations",
 	 "pattern" : "@(\\w+)",
 	 "red" : 0.7,
 	 "green" : 0.4,
-	 "blue" : 0.0
+	 "blue" : 0.0,
+	 "color" : "SKColorAnnotationKey"
 		},
 		{
 	 "key" : "Number",
 	 "pattern" : "\\b(0x|0b)?\\d+(\\.\\d+)?(f|L)?\\b",
 	 "red" : 0.0,
 	 "green" : 0.3,
-	 "blue" : 0.8
+	 "blue" : 0.8,
+	 "color" : "SKColorNumberKey"
 		},
 		{
 	 "key" : "String",
 	 "pattern" : "\"(?:[^\"\\\\]|\\\\.)*\"",
 	 "red" : 0.9,
 	 "green" : 0.0,
-	 "blue" : 0.0
+	 "blue" : 0.0,
+	 "color" : "SKColorStringKey"
 		},
 		{
 	 "key" : "Char",
 	 "pattern" : "'(?:[^'\\\\]|\\\\.)*'",
 	 "red" : 0.0,
 	 "green" : 0.4,
-	 "blue" : 0.9
+	 "blue" : 0.9,
+	 "color" : "SKColorCharacterKey"
 		},
 		{
 	 "key" : "Comment",
 	 "pattern" : "//.*|/\\*(?:.|[\\n\\r])*?\\*/",
 	 "red" : 0.0,
 	 "green" : 0.8,
-	 "blue" : 0.1
+	 "blue" : 0.1,
+	 "color" : "SKColorCommentKey"
 		},
 		{
 	 "key" : "Documentation-Comment",
 	 "pattern" : "///.*|/\\*\\*(?:.|[\\n\\r])*?\\*/",
 	 "red" : 0.0,
 	 "green" : 0.7,
-	 "blue" : 0.6
+	 "blue" : 0.6,
+	 "color" : "SKColorDocumentationCommentKey"
 		}
 	 ],
 	"completion" : []

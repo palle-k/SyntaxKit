@@ -33,6 +33,7 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 
 	public required init?(coder aDecoder: NSCoder)
 	{
+		SKAppearance.LoadDefaultSchemes()
 		let bundle = NSBundle(forClass: self.dynamicType)
 		let dataPath = bundle.pathForResource("Java", ofType: "json")
 		let data = NSData(contentsOfFile: dataPath!)
@@ -110,18 +111,30 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	
 	public func textStorage(textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int)
 	{
-		textStorage.removeAttribute(NSForegroundColorAttributeName, range: NSRange(location: 0, length: textStorage.length))
-		textStorage.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSRange(location: 0, length: textStorage.length))
+		//textStorage.removeAttribute(NSForegroundColorAttributeName, range: NSRange(location: 0, length: textStorage.length))
+		textStorage.addAttribute(NSForegroundColorAttributeName, value: language.appearance.colorTheme[SKColorKey.PlainText]!, range: NSRange(location: 0, length: textStorage.length))
 		
 		language.features.forEach
 		{ feature in
 			do
 			{
+				let color: UIColor
+				
+				if let colorKey = feature.colorKey
+				{
+					color = language.appearance.colorTheme[colorKey] ?? feature.color
+				}
+				else
+				{
+					color = feature.color
+					print("Falling back to custom color for feature: \(feature.key)")
+				}
+				
 				let expression = try NSRegularExpression(pattern: feature.pattern, options: [])
 				expression.enumerateMatchesInString(self.textStorage.string, options: [], range: NSRange(location: 0, length: self.textStorage.length))
 				{ result, flags, stop in
 					guard let result = result else { return }
-					self.textStorage.addAttribute(NSForegroundColorAttributeName, value: feature.color, range: result.range)
+					self.textStorage.addAttribute(NSForegroundColorAttributeName, value: color, range: result.range)
 				}
 			}
 			catch

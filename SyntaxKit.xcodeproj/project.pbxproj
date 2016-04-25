@@ -12,6 +12,9 @@
 		E67734FD1CCC0C0200A915CF /* SKLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67734FC1CCC0C0200A915CF /* SKLanguage.swift */; };
 		E68A36251CCD09B200D85497 /* Java.json in Resources */ = {isa = PBXBuildFile; fileRef = E68A36241CCD09B200D85497 /* Java.json */; };
 		E6AD00721CCD0BEC002C94A4 /* SKLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */; };
+		E6AD00801CCD3B40002C94A4 /* SKAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */; };
+		E6AD00821CCD7B7B002C94A4 /* DefaultAppearanceLight.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */; };
+		E6AD00841CCD8115002C94A4 /* DefaultAppearanceDark.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +27,9 @@
 		E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLayoutManager.swift; sourceTree = "<group>"; };
 		E6AD00731CCD2A79002C94A4 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		E6AD00741CCD2B79002C94A4 /* license */ = {isa = PBXFileReference; lastKnownFileType = text; path = license; sourceTree = "<group>"; };
+		E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKAppearance.swift; sourceTree = "<group>"; };
+		E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = DefaultAppearanceLight.strings; sourceTree = "<group>"; };
+		E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = DefaultAppearanceDark.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +69,10 @@
 				E67734FA1CCC0BE400A915CF /* SKTextView.swift */,
 				E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */,
 				E67734FC1CCC0C0200A915CF /* SKLanguage.swift */,
+				E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */,
 				E68A36241CCD09B200D85497 /* Java.json */,
+				E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */,
+				E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */,
 			);
 			path = SyntaxKit;
 			sourceTree = "<group>";
@@ -139,6 +148,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E68A36251CCD09B200D85497 /* Java.json in Resources */,
+				E6AD00821CCD7B7B002C94A4 /* DefaultAppearanceLight.strings in Resources */,
+				E6AD00841CCD8115002C94A4 /* DefaultAppearanceDark.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +163,7 @@
 				E6AD00721CCD0BEC002C94A4 /* SKLayoutManager.swift in Sources */,
 				E67734FB1CCC0BE400A915CF /* SKTextView.swift in Sources */,
 				E67734FD1CCC0C0200A915CF /* SKLanguage.swift in Sources */,
+				E6AD00801CCD3B40002C94A4 /* SKAppearance.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

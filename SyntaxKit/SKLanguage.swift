@@ -30,11 +30,8 @@ public struct SKLanguageFeature
 	init(withAttributes attributes: NSDictionary) throws
 	{
 		guard
-			let key		= attributes["key"] as? String,
-			let pattern = attributes["pattern"] as? String,
-			let red		= attributes["red"] as? Double,
-			let green	= attributes["green"] as? Double,
-			let blue	= attributes["blue"] as? Double
+			let key		= attributes["key"]		as? String,
+			let pattern = attributes["pattern"] as? String
 		else
 		{
 			let error = NSError(domain: "com.palleklewitz.SyntaxKit.SKLanguage.InvalidFormat", code: 1, userInfo: nil)
@@ -43,12 +40,30 @@ public struct SKLanguageFeature
 		}
 		self.key = key
 		self.pattern = pattern
-		self.color = UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1.0)
+		if let colorKey = attributes["color"] as? String where colorKey != SKColorKey.Custom.rawValue
+		{
+			self.colorKey = SKColorKey(rawValue: colorKey)!
+			self.color = UIColor.blackColor()
+		}
+		else if
+			let red		= attributes["red"]		as? Double,
+			let green	= attributes["green"]	as? Double,
+			let blue	= attributes["blue"]	as? Double
+		{
+			self.color = UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1.0)
+			self.colorKey = nil
+		}
+		else
+		{
+			self.color = UIColor.blackColor()
+			self.colorKey = nil
+		}
 	}
 	
 	let key: String
 	let pattern: String
 	let color: UIColor
+	let colorKey: SKColorKey?
 }
 
 public struct SKLanguageAutocompletionItem
@@ -83,14 +98,22 @@ public struct SKLanguageAutocompletionItem
 
 public struct SKLanguage
 {
+	
+	let name: String
+	let suffix: String
+	let appearance: SKAppearance
+	let features: [SKLanguageFeature]
+	let completionItems: [SKLanguageAutocompletionItem]
+	
+	
 	public init(fromData data: NSData) throws
 	{
 		let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
 		guard
-			let attributes			 = json as? NSDictionary,
-			let name				 = attributes["name"] as? String,
-			let suffix				 = attributes["suffix"] as? String,
-			let featureAttributes	 = (attributes["features"] as? NSArray),
+			let attributes			 = json						 as? NSDictionary,
+			let name				 = attributes["name"]		 as? String,
+			let suffix				 = attributes["suffix"]		 as? String,
+			let featureAttributes	 = (attributes["features"]	 as? NSArray),
 			let completionAttributes = (attributes["completion"] as? NSArray)
 		else
 		{
@@ -114,12 +137,8 @@ public struct SKLanguage
 		{ item -> SKLanguageAutocompletionItem in
 			return try SKLanguageAutocompletionItem(withAttributes: item)
 		}
+		appearance = SKAppearance(themeName: attributes["appearance"] as? String ?? SKDefaultDarkAppearance)
 	}
-	
-	let name: String
-	let suffix: String
-	let features: [SKLanguageFeature]
-	let completionItems: [SKLanguageAutocompletionItem]
 }
 
 
@@ -127,9 +146,9 @@ extension SKLanguageFeature : Equatable {}
 
 public func == (left: SKLanguageFeature, right: SKLanguageFeature) -> Bool
 {
-	guard left.key == right.key else { return false }
+	guard left.key == right.key			else { return false }
 	guard left.pattern == right.pattern else { return false }
-	guard left.color == right.color else { return false }
+	guard left.color == right.color		else { return false }
 	return true
 }
 
@@ -137,11 +156,11 @@ extension SKLanguageAutocompletionItem : Equatable {}
 
 public func == (left: SKLanguageAutocompletionItem, right: SKLanguageAutocompletionItem) -> Bool
 {
-	guard left.name == right.name else { return false }
+	guard left.name == right.name						else { return false }
 	guard left.itemDescription == right.itemDescription else { return false }
-	guard left.searchName == right.searchName else { return false }
-	guard left.insertionText == right.insertionText else { return false }
-	guard left.scope == right.scope else { return false }
+	guard left.searchName == right.searchName			else { return false }
+	guard left.insertionText == right.insertionText		else { return false }
+	guard left.scope == right.scope						else { return false }
 	return true
 }
 
