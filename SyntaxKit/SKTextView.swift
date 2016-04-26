@@ -30,33 +30,16 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	public var language: SKLanguage
 	public var autoIndent: Bool = true
 	public let lineNumberWidth: CGFloat
+	
+	private var inputHelperView: UIToolbar!
+	
+	private var inputTab: UIBarButtonItem!
+	private var inputSemicolon: UIBarButtonItem!
+	private var inputParentheses: UIBarButtonItem!
+	private var inputAngleBrackets: UIBarButtonItem!
+	private var inputSquareBrackets: UIBarButtonItem!
+	private var inputCloseCurrentBracket: UIBarButtonItem!
 
-	public required init?(coder aDecoder: NSCoder)
-	{
-		SKAppearance.LoadDefaultSchemes()
-		let bundle = NSBundle(forClass: self.dynamicType)
-		let dataPath = bundle.pathForResource("Java", ofType: "json")
-		let data = NSData(contentsOfFile: dataPath!)
-		let language = try! SKLanguage(fromData: data!) 
-		self.language = language
-		
-		lineNumberWidth = 30.0
-		
-		super.init(coder: aDecoder)
-		
-		textStorage.delegate = self
-		self.delegate = self
-		
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIKeyboardDidChangeFrameNotification, object: nil)
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-	}
-	
-	public override func encodeWithCoder(aCoder: NSCoder)
-	{
-		super.encodeWithCoder(aCoder)
-	}
-	
 	public override init(frame: CGRect, textContainer: NSTextContainer?)
 	{
 		let bundle = NSBundle(forClass: self.dynamicType)
@@ -99,9 +82,78 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		returnKeyType = .Default
 		enablesReturnKeyAutomatically = false
 		
+		inputHelperView = UIToolbar(frame: CGRect(x: 0, y: frame.height - 44, width: frame.width, height: 44))
+		inputHelperView.barStyle = .Black
+		
+		inputTab = UIBarButtonItem(title: "⇥", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputTab.width = 50
+		inputSemicolon = UIBarButtonItem(title: ";", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputSemicolon.width = 50
+		inputParentheses = UIBarButtonItem(title: "(...)", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputParentheses.width = 50
+		inputAngleBrackets = UIBarButtonItem(title: "{...}", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputAngleBrackets.width = 50
+		inputSquareBrackets = UIBarButtonItem(title: "[...]", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputSquareBrackets.width = 50
+		inputCloseCurrentBracket = UIBarButtonItem(title: ")", style: .Plain, target: self, action: #selector(inputItemPressed(_:)))
+		inputCloseCurrentBracket.width = 50
+		
+		let fixedSpaceSemicolonParenthesis = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FixedSpace, target: nil, action: nil)
+		fixedSpaceSemicolonParenthesis.width = 40
+		
+		let fixedSpaceBracketClose = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FixedSpace, target: nil, action: nil)
+		fixedSpaceBracketClose.width = 20
+		
+		inputHelperView.items =
+			[
+				inputTab,
+				UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil),
+				inputSemicolon,
+				fixedSpaceSemicolonParenthesis,
+				inputParentheses,
+				inputAngleBrackets,
+				inputSquareBrackets,
+				fixedSpaceBracketClose,
+				inputCloseCurrentBracket
+			]
+		
+		inputHelperView.items?.forEach
+		{ item in
+			let font = UIFont.systemFontOfSize(24.0)
+			item.setTitleTextAttributes([NSFontAttributeName : font], forState: .Normal)
+		}
+		
+		self.inputAccessoryView = inputHelperView
+		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIKeyboardDidChangeFrameNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+	}
+	
+	public required init?(coder aDecoder: NSCoder)
+	{
+		SKAppearance.LoadDefaultSchemes()
+		let bundle = NSBundle(forClass: self.dynamicType)
+		let dataPath = bundle.pathForResource("Java", ofType: "json")
+		let data = NSData(contentsOfFile: dataPath!)
+		let language = try! SKLanguage(fromData: data!)
+		self.language = language
+		
+		lineNumberWidth = 30.0
+		
+		super.init(coder: aDecoder)
+		
+		textStorage.delegate = self
+		self.delegate = self
+		
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIKeyboardDidChangeFrameNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+	}
+	
+	public override func encodeWithCoder(aCoder: NSCoder)
+	{
+		super.encodeWithCoder(aCoder)
 	}
 	
 	public func textStorage(textStorage: NSTextStorage, willProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int)
@@ -111,7 +163,7 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	
 	public func textStorage(textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int)
 	{
-		//textStorage.removeAttribute(NSForegroundColorAttributeName, range: NSRange(location: 0, length: textStorage.length))
+		textStorage.removeAttribute(NSBackgroundColorAttributeName, range: NSRange(location: 0, length: textStorage.length))
 		textStorage.addAttribute(NSForegroundColorAttributeName, value: language.appearance.colorTheme[SKColorKey.PlainText]!, range: NSRange(location: 0, length: textStorage.length))
 		
 		language.features.forEach
@@ -141,7 +193,27 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 			{
 				print("Expression could not be evaluted. Error: \(error)")
 			}
-			
+		}
+		
+		guard let expression = try? NSRegularExpression(pattern: "<#(.*?)#>", options: [])
+			else
+		{
+			fatalError("Expression invalid")
+		}
+		expression.enumerateMatchesInString(textStorage.string, options: [], range: NSRange(location: 0, length: textStorage.length))
+		{ result, flags, stop in
+			guard let result = result else { return }
+			self.textStorage.addAttribute(NSBackgroundColorAttributeName, value: UIColor(red: 0.5, green: 0.8, blue: 0.9, alpha: 1.0), range: result.range)
+			self.textStorage.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: result.range)
+			let glyphs:UnsafeMutablePointer<CGGlyph> = nil
+			let properties:UnsafeMutablePointer<NSGlyphProperty> = nil
+			let characterIndexes: UnsafeMutablePointer<Int> = nil
+			let bidiLevels: UnsafeMutablePointer<UInt8> = nil
+			let count = self.layoutManager.getGlyphsInRange(result.range, glyphs: glyphs, properties: properties, characterIndexes: characterIndexes, bidiLevels: bidiLevels)
+			for i in [0, 1, count-2, count-1]
+			{
+				self.layoutManager.setNotShownAttribute(false, forGlyphAtIndex: i + result.range.location)
+			}
 		}
 	}
 	
@@ -318,20 +390,21 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 				let nextCharacter = (textStorage.string as NSString).substringWithRange(NSRange(location: range.location, length: 1))
 				switch (text, nextCharacter)
 				{
-				case ("}", "}"):
+				case ("}", "}"), ("]", "]"), (")", ")"), ("\"", "\""), ("'", "'"):
 					selectedRange.location += 1
 					return false
-				case ("]", "]"):
-					selectedRange.location += 1
-					return false
-				case (")", ")"):
-					selectedRange.location += 1
-					return false
-				case ("\"", "\""):
-					selectedRange.location += 1
-					return false
-				case ("'", "'"):
-					selectedRange.location += 1
+				case ("\t", _):
+					guard let expression = try? NSRegularExpression(pattern: "<#(.*?)#>", options: [])
+						else
+					{
+						fatalError("Expression invalid")
+					}
+					guard let match = expression.firstMatchInString(self.textStorage.string, options: [], range: NSRange(location: self.selectedRange.location, length: self.textStorage.length - self.selectedRange.location))
+						else
+					{
+						break
+					}
+					selectedRange = match.range
 					return false
 				default:
 					break
@@ -350,6 +423,7 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	
 	func indentationLevel(atLocation location: Int) -> Int
 	{
+		
 		//TODO: Search for quotes and stuff to ignore brackets if in a string.
 		guard
 			let increaseExpression = try? NSRegularExpression(pattern: "\\{|\\[|\\(", options: []),
@@ -361,7 +435,62 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		let increasingMatchCount = increaseExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
 		let decreasingMatchCount = decreaseExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
 		
-		return increasingMatchCount - decreasingMatchCount
+//		guard let increasingIfExpression = try? NSRegularExpression(pattern: "\\bif\\b([^;]*)", options: [.DotMatchesLineSeparators, .AllowCommentsAndWhitespace])
+//		else
+//		{
+//			fatalError("Invalid expression.")
+//		}
+//		
+//		let increasingIfMatchCount = increasingIfExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
+
+		return increasingMatchCount - decreasingMatchCount/* + increasingIfMatchCount*/
+	}
+	
+	@objc private func inputItemPressed(sender: UIBarButtonItem)
+	{
+		let insertion: String?
+		switch sender
+		{
+		case inputTab:
+			insertion = "\t"
+			break
+		case inputSemicolon:
+			insertion = ";"
+			break
+		case inputParentheses:
+			insertion = "("
+			break
+		case inputAngleBrackets:
+			insertion = "{"
+			break
+		case inputSquareBrackets:
+			insertion = "["
+			break
+		case inputCloseCurrentBracket:
+			guard selectedRange.location < textStorage.length else { return }
+			let nextCharacter = (self.textStorage.string as NSString).substringWithRange(NSRange(location: self.selectedRange.location, length: 1))
+			
+			if nextCharacter == ")"
+			{
+				selectedRange.location += 1
+			}
+			else if nextCharacter == "}"
+			{
+				selectedRange.location += 1
+			}
+			else if nextCharacter == "]"
+			{
+				selectedRange.location += 1
+			}
+			return
+		default:
+			insertion = nil
+			break
+		}
+		
+		guard let insertionText = insertion else { return }
+		lastInsertedText = insertionText
+		insertText(insertionText)
 	}
 
 }

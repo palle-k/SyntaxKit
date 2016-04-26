@@ -29,7 +29,7 @@
 "SKColorBackgroundKey" = "#FFFFFF";
 "SKColorLineNumberKey" = "#555555";
 "SKColorLineNumberBackgroundKey" = "#CCCCCC";
-"SKColorKeywordKey" = "#F00030";
+"SKColorKeywordKey" = "#F00080";
 "SKColorControlCharacterKey" = "#000000";
 "SKColorOperatorKey" = "";
 "SKColorAnnotationKey" = "";
