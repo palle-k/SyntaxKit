@@ -7,29 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E62FFE731CE0106A00C34DD0 /* SKAutocompleteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62FFE721CE0106A00C34DD0 /* SKAutocompleteController.swift */; };
+		E62FFE751CE0107A00C34DD0 /* SKAutocompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62FFE741CE0107A00C34DD0 /* SKAutocompleteView.swift */; };
 		E67734D71CCC0B8200A915CF /* SyntaxKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E67734D61CCC0B8200A915CF /* SyntaxKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E67734FB1CCC0BE400A915CF /* SKTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67734FA1CCC0BE400A915CF /* SKTextView.swift */; };
 		E67734FD1CCC0C0200A915CF /* SKLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67734FC1CCC0C0200A915CF /* SKLanguage.swift */; };
 		E68A36251CCD09B200D85497 /* Java.json in Resources */ = {isa = PBXBuildFile; fileRef = E68A36241CCD09B200D85497 /* Java.json */; };
+		E693346B1CCFB23E003257A5 /* SKPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E693346A1CCFB23E003257A5 /* SKPlaceholderView.swift */; };
+		E6ACE3701CD8997B00EE8534 /* SKCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6ACE36F1CD8997B00EE8534 /* SKCoding.swift */; };
 		E6AD00721CCD0BEC002C94A4 /* SKLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */; };
 		E6AD00801CCD3B40002C94A4 /* SKAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */; };
 		E6AD00821CCD7B7B002C94A4 /* DefaultAppearanceLight.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */; };
 		E6AD00841CCD8115002C94A4 /* DefaultAppearanceDark.strings in Resources */ = {isa = PBXBuildFile; fileRef = E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */; };
+		E6EC00461CDBFCCC007A9D7F /* Swift.json in Resources */ = {isa = PBXBuildFile; fileRef = E6EC00451CDBFCCC007A9D7F /* Swift.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E62FFE721CE0106A00C34DD0 /* SKAutocompleteController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKAutocompleteController.swift; sourceTree = "<group>"; };
+		E62FFE741CE0107A00C34DD0 /* SKAutocompleteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKAutocompleteView.swift; sourceTree = "<group>"; };
 		E67734D31CCC0B8200A915CF /* SyntaxKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SyntaxKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E67734D61CCC0B8200A915CF /* SyntaxKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyntaxKit.h; sourceTree = "<group>"; };
 		E67734D81CCC0B8200A915CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E67734FA1CCC0BE400A915CF /* SKTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKTextView.swift; sourceTree = "<group>"; };
 		E67734FC1CCC0C0200A915CF /* SKLanguage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLanguage.swift; sourceTree = "<group>"; };
 		E68A36241CCD09B200D85497 /* Java.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Java.json; sourceTree = "<group>"; };
+		E693346A1CCFB23E003257A5 /* SKPlaceholderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKPlaceholderView.swift; sourceTree = "<group>"; };
+		E6ACE36F1CD8997B00EE8534 /* SKCoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKCoding.swift; sourceTree = "<group>"; };
 		E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKLayoutManager.swift; sourceTree = "<group>"; };
 		E6AD00731CCD2A79002C94A4 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		E6AD00741CCD2B79002C94A4 /* license */ = {isa = PBXFileReference; lastKnownFileType = text; path = license; sourceTree = "<group>"; };
 		E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SKAppearance.swift; sourceTree = "<group>"; };
 		E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = DefaultAppearanceLight.strings; sourceTree = "<group>"; };
 		E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = DefaultAppearanceDark.strings; sourceTree = "<group>"; };
+		E6EC00451CDBFCCC007A9D7F /* Swift.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Swift.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,10 +77,15 @@
 				E67734D61CCC0B8200A915CF /* SyntaxKit.h */,
 				E67734D81CCC0B8200A915CF /* Info.plist */,
 				E67734FA1CCC0BE400A915CF /* SKTextView.swift */,
+				E62FFE721CE0106A00C34DD0 /* SKAutocompleteController.swift */,
+				E62FFE741CE0107A00C34DD0 /* SKAutocompleteView.swift */,
+				E693346A1CCFB23E003257A5 /* SKPlaceholderView.swift */,
 				E6AD00711CCD0BEC002C94A4 /* SKLayoutManager.swift */,
 				E67734FC1CCC0C0200A915CF /* SKLanguage.swift */,
+				E6ACE36F1CD8997B00EE8534 /* SKCoding.swift */,
 				E6AD007F1CCD3B40002C94A4 /* SKAppearance.swift */,
 				E68A36241CCD09B200D85497 /* Java.json */,
+				E6EC00451CDBFCCC007A9D7F /* Swift.json */,
 				E6AD00811CCD7B7B002C94A4 /* DefaultAppearanceLight.strings */,
 				E6AD00831CCD8115002C94A4 /* DefaultAppearanceDark.strings */,
 			);
@@ -150,6 +165,7 @@
 				E68A36251CCD09B200D85497 /* Java.json in Resources */,
 				E6AD00821CCD7B7B002C94A4 /* DefaultAppearanceLight.strings in Resources */,
 				E6AD00841CCD8115002C94A4 /* DefaultAppearanceDark.strings in Resources */,
+				E6EC00461CDBFCCC007A9D7F /* Swift.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,9 +176,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E693346B1CCFB23E003257A5 /* SKPlaceholderView.swift in Sources */,
+				E6ACE3701CD8997B00EE8534 /* SKCoding.swift in Sources */,
+				E62FFE731CE0106A00C34DD0 /* SKAutocompleteController.swift in Sources */,
 				E6AD00721CCD0BEC002C94A4 /* SKLayoutManager.swift in Sources */,
 				E67734FB1CCC0BE400A915CF /* SKTextView.swift in Sources */,
 				E67734FD1CCC0C0200A915CF /* SKLanguage.swift in Sources */,
+				E62FFE751CE0107A00C34DD0 /* SKAutocompleteView.swift in Sources */,
 				E6AD00801CCD3B40002C94A4 /* SKAppearance.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

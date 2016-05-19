@@ -38,8 +38,8 @@
 "SKColorGenericTypeKey" = "";
 "SKColorVariableKey" = "";
 "SKColorConstantKey" = "";
-"SKColorInstanceVariableKey" = "";
-"SKColorInstanceVariableDeclarationKey" = "";
+"SKColorInstanceVariableKey" = "#A0F0F0";
+"SKColorInstanceVariableDeclarationKey" = "#A050B0";
 "SKColorStaticVariableKey" = "";
 "SKColorStaticVariableDeclarationKey" = "";
 "SKColorGlobalVariableKey" = "";
@@ -65,3 +65,7 @@
 "SKColorMultilineDocumentationCommentKey" = "#20B0D0";
 "SKColorDocumentationCommentParameterKey" = "#20B0D0";
 "SKColorDocumentationCommentValueKey" = "#20B0D0";
+"SKColorClassKey" = "";
+"SKColorIdentifierKey" = "";
+"SKColorLabelKey" = "";
+"SKColorSelectorKey" = "";

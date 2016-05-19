@@ -35,7 +35,7 @@ private class ClassForBundleLoading
 	}
 }
 
-private extension UIColor
+internal extension UIColor
 {
 	//TODO (Swift 2.3): Replace this with a failable initializer.
 	//This is currently not possible because of https://bugs.swift.org/browse/SR-704
@@ -61,7 +61,7 @@ private extension UIColor
 		return UIColor(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: 255)
 	}
 	
-	private var colorString: String
+	internal var colorString: String
 	{
 		var red:CGFloat = 0
 		var green:CGFloat = 0
@@ -93,9 +93,6 @@ public let SKDefaultDarkAppearance = "DefaultAppearanceDark"
 public struct SKAppearance
 {
 	private static var didCheckForDefaultsLoaded = false
-	
-	public let font: UIFont
-	public let colorTheme: [SKColorKey : UIColor]
 	
 	private static func ColorForKey(themeName: String, key: SKColorKey) -> UIColor!
 	{
@@ -132,10 +129,21 @@ public struct SKAppearance
 	internal static func LoadDefaultSchemes()
 	{
 		if didCheckForDefaultsLoaded { return }
-		NSUserDefaults.resetStandardUserDefaults()
+		ResetDefaultSchemes()
 		LoadLightAppearance()
 		LoadDarkAppearance()
 		didCheckForDefaultsLoaded = true
+	}
+	
+	internal static func ResetDefaultSchemes()
+	{
+		let defaults = NSUserDefaults.standardUserDefaults()
+		SKColorKey.values.forEach { (key) in
+			let defaultKeyLight = "com.palleklewitz.SyntaxKit.\(SKDefaultLightAppearance).\(key.rawValue)"
+			let defaultKeyDark = "com.palleklewitz.SyntaxKit.\(SKDefaultDarkAppearance).\(key.rawValue)"
+			defaults.removeObjectForKey(defaultKeyLight)
+			defaults.removeObjectForKey(defaultKeyDark)
+		}
 	}
 	
 	private static func LoadLightAppearance()
@@ -179,6 +187,10 @@ public struct SKAppearance
 		}
 	}
 	
+	public let font: UIFont
+	public internal(set) var colorTheme: [SKColorKey : UIColor]
+	public let themeName: String
+	
 	public init(themeName: String)
 	{
 		let font = UIFont(name: "Menlo", size: 14.0)!
@@ -191,6 +203,49 @@ public struct SKAppearance
 		}
 		
 		self.colorTheme = colorTheme
+		self.themeName = themeName
+	}
+	
+	public mutating func setColor(color: UIColor, forKey key: SKColorKey)
+	{
+		let customKey = "com.palleklewitz.SyntaxKit.\(themeName).\(key.rawValue)"
+		let defaults = NSUserDefaults.standardUserDefaults()
+		defaults.setObject(color.colorString, forKey: customKey)
+		colorTheme[key] = color
+	}
+	
+	public func color(forKey key: SKColorKey) -> UIColor
+	{
+		return self.dynamicType.ColorForKey(self.themeName, key: key)
+	}
+	
+	public subscript(key: SKColorKey) -> UIColor
+	{
+		get
+		{
+			return color(forKey: key)
+		}
+		
+		set (new)
+		{
+			setColor(new, forKey: key)
+		}
+	}
+	
+	public mutating func load(fromStringsFileAtPath path: String)
+	{
+		guard let values = NSDictionary(contentsOfFile: path) else { return }
+		for key in SKColorKey.values
+		{
+			guard let colorString = values[key.rawValue] as? String,
+			let color = UIColor.color(withString: colorString)
+				else
+			{
+				continue
+			}
+			
+			self[key] = color
+		}
 	}
 }
 

@@ -31,6 +31,8 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	public var autoIndent: Bool = true
 	public let lineNumberWidth: CGFloat
 	
+	private var autocompleteController: SKAutocompleteController
+	
 	private var inputHelperView: UIToolbar!
 	
 	private var inputTab: UIBarButtonItem!
@@ -39,11 +41,15 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	private var inputAngleBrackets: UIBarButtonItem!
 	private var inputSquareBrackets: UIBarButtonItem!
 	private var inputCloseCurrentBracket: UIBarButtonItem!
+	
+	private var findMenuItem: UIMenuItem!
+	private var findReplaceMenuItem: UIMenuItem!
+	private var documentationMenuItem: UIMenuItem!
 
 	public override init(frame: CGRect, textContainer: NSTextContainer?)
 	{
 		let bundle = NSBundle(forClass: self.dynamicType)
-		let dataPath = bundle.pathForResource("Java", ofType: "json")
+		let dataPath = bundle.pathForResource("Swift", ofType: "json")
 		let data = NSData(contentsOfFile: dataPath!)
 		let language = try! SKLanguage(fromData: data!)
 		self.language = language
@@ -61,7 +67,13 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		layoutManager.addTextContainer(textContainer)
 		textStorage.addLayoutManager(layoutManager)
 		
+		let autocompleteView = SKAutocompleteView(frame: CGRectNull, style: .Plain)
+		autocompleteController = SKAutocompleteController(withView: autocompleteView)
+		
 		super.init(frame: frame, textContainer: textContainer)
+		
+		self.addSubview(autocompleteView)
+		self.bringSubviewToFront(autocompleteView)
 		
 		textStorage.delegate = self
 		self.delegate = self
@@ -125,6 +137,15 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		
 		self.inputAccessoryView = inputHelperView
 		
+		findMenuItem = UIMenuItem(title: "Find other occurences", action: #selector(menuItemPressed))
+		findReplaceMenuItem = UIMenuItem(title: "Find and replace", action: #selector(menuItemPressed))
+		documentationMenuItem = UIMenuItem(title: "Show documentation", action: #selector(menuItemPressed))
+		
+		let menuItems = [findMenuItem, findReplaceMenuItem, documentationMenuItem]
+		
+		let defaultMenuItems = UIMenuController.sharedMenuController().menuItems
+		UIMenuController.sharedMenuController().menuItems = (defaultMenuItems ?? []) + menuItems.map{$0!}
+		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIKeyboardDidChangeFrameNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardDidHide(_:)), name: UIKeyboardDidHideNotification, object: nil)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
@@ -141,7 +162,12 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		
 		lineNumberWidth = 30.0
 		
+		let autocompleteView = SKAutocompleteView(frame: CGRectNull, style: .Plain)
+		autocompleteController = SKAutocompleteController(withView: autocompleteView)
+		
 		super.init(coder: aDecoder)
+		
+		self.addSubview(autocompleteView)
 		
 		textStorage.delegate = self
 		self.delegate = self
@@ -154,11 +180,7 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 	public override func encodeWithCoder(aCoder: NSCoder)
 	{
 		super.encodeWithCoder(aCoder)
-	}
-	
-	public func textStorage(textStorage: NSTextStorage, willProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int)
-	{
-		
+		aCoder.encodeValue(language, forKey: "SKTextViewLanguage")
 	}
 	
 	public func textStorage(textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int)
@@ -203,29 +225,48 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		expression.enumerateMatchesInString(textStorage.string, options: [], range: NSRange(location: 0, length: textStorage.length))
 		{ result, flags, stop in
 			guard let result = result else { return }
-			self.textStorage.addAttribute(NSBackgroundColorAttributeName, value: UIColor(red: 0.5, green: 0.8, blue: 0.9, alpha: 1.0), range: result.range)
+			self.textStorage.addAttribute(NSBackgroundColorAttributeName, value: UIColor(red: 0.5, green: 0.8, blue: 0.9, alpha: 0.5), range: result.range)
 			self.textStorage.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: result.range)
-			let glyphs:UnsafeMutablePointer<CGGlyph> = nil
-			let properties:UnsafeMutablePointer<NSGlyphProperty> = nil
-			let characterIndexes: UnsafeMutablePointer<Int> = nil
-			let bidiLevels: UnsafeMutablePointer<UInt8> = nil
-			let count = self.layoutManager.getGlyphsInRange(result.range, glyphs: glyphs, properties: properties, characterIndexes: characterIndexes, bidiLevels: bidiLevels)
-			for i in [0, 1, count-2, count-1]
-			{
-				self.layoutManager.setNotShownAttribute(false, forGlyphAtIndex: i + result.range.location)
-			}
+//			let start = self.layoutManager.glyphIndexForCharacterAtIndex(result.range.location)
+//			let second = self.layoutManager.glyphIndexForCharacterAtIndex(result.range.location+1)
+//			let secondLast = self.layoutManager.glyphIndexForCharacterAtIndex(result.range.location+result.range.length-2)
+//			let last = self.layoutManager.glyphIndexForCharacterAtIndex(result.range.location+result.range.length-1)
+//			[start, second, secondLast, last].forEach
+//			{
+//				self.layoutManager.setNotShownAttribute(true, forGlyphAtIndex: $0)
+//			}
+//			self.layoutManager.invalidateDisplayForCharacterRange(result.range)
 		}
 	}
 	
 	public override var keyCommands: [UIKeyCommand]?
 	{
+		let newFileCommand = UIKeyCommand(input: "n", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "New...")
+		let saveFileCommand = UIKeyCommand(input: "s", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Save")
+		
+		let undoCommand = UIKeyCommand(input: "z", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Undo")
+		let redoCommand = UIKeyCommand(input: "z", modifierFlags: [.Command, .Shift], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Redo")
+		
+		let cutCommand = UIKeyCommand(input: "x", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Cut")
+		let copyCommand = UIKeyCommand(input: "c", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Copy")
+		let pasteCommand = UIKeyCommand(input: "v", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Paste")
+		
+		let selectAllCommand = UIKeyCommand(input: "a", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Select All")
+		
 		let indentRightCommand = UIKeyCommand(input: "6", modifierFlags: [.Command], action: #selector(indentRight), discoverabilityTitle: "Indent Right")
 		let indentLeftCommand = UIKeyCommand(input: "5", modifierFlags: [.Command], action: #selector(indentLeft), discoverabilityTitle: "Indent Left")
 		
-		let zoomInCommand = UIKeyCommand(input: UIKeyInputUpArrow, modifierFlags: [.Command], action: #selector(zoomIn), discoverabilityTitle: "Zoom In")
-		let zoomOutCommand = UIKeyCommand(input: UIKeyInputDownArrow, modifierFlags: [.Command], action: #selector(zoomOut), discoverabilityTitle: "Zoom Out")
+		let zoomInCommand = UIKeyCommand(input: "+", modifierFlags: [.Command], action: #selector(zoomIn), discoverabilityTitle: "Zoom In")
+		let zoomOutCommand = UIKeyCommand(input: "-", modifierFlags: [.Command], action: #selector(zoomOut), discoverabilityTitle: "Zoom Out")
 		
-		return (super.keyCommands ?? []) + [zoomInCommand, zoomOutCommand, indentLeftCommand, indentRightCommand]
+		let showCompletions = UIKeyCommand(input: " ", modifierFlags: [.Command], action: #selector(didExecuteKeyCommmand), discoverabilityTitle: "Show Completions")
+		
+		return (super.keyCommands ?? []) + [newFileCommand, saveFileCommand, undoCommand, redoCommand, cutCommand, copyCommand, pasteCommand, selectAllCommand, zoomInCommand, zoomOutCommand, indentLeftCommand, indentRightCommand, showCompletions]
+	}
+	
+	@objc func didExecuteKeyCommmand(sender: UIKeyCommand)
+	{
+		
 	}
 	
 	@objc func indentRight()
@@ -399,8 +440,8 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 					{
 						fatalError("Expression invalid")
 					}
-					guard let match = expression.firstMatchInString(self.textStorage.string, options: [], range: NSRange(location: self.selectedRange.location, length: self.textStorage.length - self.selectedRange.location))
-						else
+					guard let match = expression.firstMatchInString(self.textStorage.string, options: [], range: NSRange(location: self.selectedRange.location + self.selectedRange.length, length: self.textStorage.length - self.selectedRange.location - self.selectedRange.length))
+					else
 					{
 						break
 					}
@@ -428,22 +469,22 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		guard
 			let increaseExpression = try? NSRegularExpression(pattern: "\\{|\\[|\\(", options: []),
 			let decreaseExpression = try? NSRegularExpression(pattern: "\\}|\\]|\\)", options: [])
-		else { fatalError("Invalid regex") }
+		else { fatalError("Invalid expression") }
 		
 		let textRange = NSRange(location: 0, length: location)
 		
 		let increasingMatchCount = increaseExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
 		let decreasingMatchCount = decreaseExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
 		
-//		guard let increasingIfExpression = try? NSRegularExpression(pattern: "\\bif\\b([^;]*)", options: [.DotMatchesLineSeparators, .AllowCommentsAndWhitespace])
+//		guard let increasingIfExpression = try? NSRegularExpression(pattern: "\\bif\\b.*[^{;]", options: [.DotMatchesLineSeparators, .AllowCommentsAndWhitespace])
 //		else
 //		{
 //			fatalError("Invalid expression.")
 //		}
 //		
 //		let increasingIfMatchCount = increasingIfExpression.numberOfMatchesInString(textStorage.string, options: [], range: textRange)
-
-		return increasingMatchCount - decreasingMatchCount/* + increasingIfMatchCount*/
+//		
+		return increasingMatchCount - decreasingMatchCount /* + increasingIfMatchCount*/
 	}
 	
 	@objc private func inputItemPressed(sender: UIBarButtonItem)
@@ -452,7 +493,19 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		switch sender
 		{
 		case inputTab:
-			insertion = "\t"
+			guard let expression = try? NSRegularExpression(pattern: "<#(.*?)#>", options: [])
+				else
+			{
+				fatalError("Expression invalid")
+			}
+			guard let match = expression.firstMatchInString(self.textStorage.string, options: [], range: NSRange(location: self.selectedRange.location + self.selectedRange.length, length: self.textStorage.length - self.selectedRange.location - self.selectedRange.length))
+				else
+			{
+				insertion = "\t"
+				break
+			}
+			insertion = nil
+			selectedRange = match.range
 			break
 		case inputSemicolon:
 			insertion = ";"
@@ -470,15 +523,7 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 			guard selectedRange.location < textStorage.length else { return }
 			let nextCharacter = (self.textStorage.string as NSString).substringWithRange(NSRange(location: self.selectedRange.location, length: 1))
 			
-			if nextCharacter == ")"
-			{
-				selectedRange.location += 1
-			}
-			else if nextCharacter == "}"
-			{
-				selectedRange.location += 1
-			}
-			else if nextCharacter == "]"
+			if [")", "}", "]", "\"", "'"].contains(nextCharacter)
 			{
 				selectedRange.location += 1
 			}
@@ -493,4 +538,26 @@ public class SKTextView: UITextView, NSTextStorageDelegate, UITextViewDelegate
 		insertText(insertionText)
 	}
 
+	@objc private func menuItemPressed(sender: UIMenuItem)
+	{
+		
+	}
+	
+	public func textViewDidChangeSelection(textView: UITextView)
+	{
+		guard let expression = try? NSRegularExpression(pattern: "<#(.*?)#>", options: [])
+			else
+		{
+			fatalError("Expression invalid")
+		}
+		let result = expression.matchesInString(self.textStorage.string, options: [], range: NSRange(location: 0, length: self.textStorage.length))
+		.filter
+		{ result -> Bool in
+			result.range.location < textView.selectedRange.location && result.range.location + result.range.length > textView.selectedRange.location + textView.selectedRange.length
+		}.first
+		if let range = result?.range
+		{
+			textView.selectedRange = range
+		}
+	}
 }

@@ -73,7 +73,7 @@ public struct SKLanguageAutocompletionItem
 		guard
 			let name			= attributes["name"]			as? String,
 			let itemDescription = attributes["description"]		as? String,
-			let searchName		= attributes["search-name"]		as? String,
+			let searchTags		= attributes["search-tags"]		as? NSArray as? [String],
 			let insertionText	= attributes["insertion-text"]	as? String,
 			let scope			= attributes["scope"]			as? String?
 		else
@@ -84,14 +84,14 @@ public struct SKLanguageAutocompletionItem
 		}
 		self.name			 = name
 		self.itemDescription = itemDescription
-		self.searchName		 = searchName
+		self.searchTags		 = searchTags
 		self.insertionText	 = insertionText
 		self.scope = scope
 	}
 	
 	let name: String
 	let itemDescription: String?
-	let searchName: String
+	let searchTags: [String]
 	let insertionText: String
 	let scope: String?
 }
@@ -158,7 +158,7 @@ public func == (left: SKLanguageAutocompletionItem, right: SKLanguageAutocomplet
 {
 	guard left.name == right.name						else { return false }
 	guard left.itemDescription == right.itemDescription else { return false }
-	guard left.searchName == right.searchName			else { return false }
+	guard left.searchTags == right.searchTags			else { return false }
 	guard left.insertionText == right.insertionText		else { return false }
 	guard left.scope == right.scope						else { return false }
 	return true
