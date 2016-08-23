@@ -30,7 +30,7 @@
 		},
 		{
 	 "key" : "Keyword",
-	 "pattern" : "(\\b)(public|internal|private|override|func|var|let|lazy|init|deinit|required|convenience|mutating|nonmutating|static|class|struct|enum|switch|case|default|break|continue|return|if|else|guard|do|repeat|while|for|catch|try|throw|throws|rethrows|subscript|get|set|didSet|true|false|self|Self|dynamicType|nil|#selector|import|extension|in|where|is|as|super|infix|prefix|postfix|operator|associativity|precedence|((?<=associativity)\\s+(left|right)))(\\b)",
+	 "pattern" : "(\\b)(public|internal|private|override|func|var|let|lazy|init|deinit|required|convenience|mutating|nonmutating|indirect|static|class|struct|enum|switch|case|default|break|continue|return|if|else|guard|do|repeat|while|for|catch|try|throw|throws|rethrows|defer|subscript|get|set|didSet|true|false|self|Self|dynamicType|nil|#selector|import|extension|in|where|is|as|super|infix|prefix|postfix|operator|associativity|precedence|((?<=associativity)\\s+(left|right))|@objc|@inline\\(\\w*\\)|@warn_unused_result)(\\b)",
 	 "red" : 0.8,
 	 "green" : 0.0,
 	 "blue" : 0.5,
@@ -62,7 +62,7 @@
 		},
 		{
 	 "key" : "ClosureArgument",
-	 "pattern" : "\\b\\$\\d+\\b",
+	 "pattern" : "\\$\\d+\\b",
 	 "red" : 0.7,
 	 "green" : 0.7,
 	 "blue" : 0.7,

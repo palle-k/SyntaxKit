@@ -25,7 +25,11 @@
 
 import Foundation
 
-public struct SKLanguageFeature
+
+@available(*, deprecated:1.0, renamed:"LanguageFeature")
+public typealias SKLanguageFeature = LanguageFeature
+
+public struct LanguageFeature
 {
 	init(withAttributes attributes: NSDictionary) throws
 	{
@@ -40,10 +44,10 @@ public struct SKLanguageFeature
 		}
 		self.key = key
 		self.pattern = pattern
-		if let colorKey = attributes["color"] as? String where colorKey != SKColorKey.Custom.rawValue
+		if let colorKey = attributes["color"] as? String , colorKey != ColorKey.Custom.rawValue
 		{
-			self.colorKey = SKColorKey(rawValue: colorKey)!
-			self.color = UIColor.blackColor()
+			self.colorKey = ColorKey(rawValue: colorKey)!
+			self.color = UIColor.black
 		}
 		else if
 			let red		= attributes["red"]		as? Double,
@@ -55,7 +59,7 @@ public struct SKLanguageFeature
 		}
 		else
 		{
-			self.color = UIColor.blackColor()
+			self.color = UIColor.black
 			self.colorKey = nil
 		}
 	}
@@ -63,10 +67,14 @@ public struct SKLanguageFeature
 	let key: String
 	let pattern: String
 	let color: UIColor
-	let colorKey: SKColorKey?
+	let colorKey: ColorKey?
 }
 
-public struct SKLanguageAutocompletionItem
+
+@available(*, deprecated:1.0, renamed:"LanguageAutocompletionItem")
+public typealias SKLanguageAutocompletionItem = LanguageAutocompletionItem
+
+public struct LanguageAutocompletionItem
 {
 	init(withAttributes attributes: NSDictionary) throws
 	{
@@ -96,19 +104,23 @@ public struct SKLanguageAutocompletionItem
 	let scope: String?
 }
 
-public struct SKLanguage
+
+@available(*, deprecated:1.0, renamed:"Language")
+public typealias SKLanguage = Language
+
+public struct Language
 {
 	
 	let name: String
 	let suffix: String
-	let appearance: SKAppearance
-	let features: [SKLanguageFeature]
-	let completionItems: [SKLanguageAutocompletionItem]
+	let appearance: Appearance
+	let features: [LanguageFeature]
+	let completionItems: [LanguageAutocompletionItem]
 	
 	
-	public init(fromData data: NSData) throws
+	public init(fromData data: Data) throws
 	{
-		let json = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+		let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
 		guard
 			let attributes			 = json						 as? NSDictionary,
 			let name				 = attributes["name"]		 as? String,
@@ -127,24 +139,23 @@ public struct SKLanguage
 		{
 			$0 as? NSDictionary
 		}.map
-		{ feature -> SKLanguageFeature in
-			return try SKLanguageFeature(withAttributes: feature)
+		{ feature -> LanguageFeature in
+			return try LanguageFeature(withAttributes: feature)
 		}
 		completionItems = try completionAttributes.flatMap
 		{
 			$0 as? NSDictionary
 		}.map
-		{ item -> SKLanguageAutocompletionItem in
-			return try SKLanguageAutocompletionItem(withAttributes: item)
+		{ item -> LanguageAutocompletionItem in
+			return try LanguageAutocompletionItem(withAttributes: item)
 		}
-		appearance = SKAppearance(themeName: attributes["appearance"] as? String ?? SKDefaultDarkAppearance)
+		appearance = Appearance(themeName: attributes["appearance"] as? String ?? DefaultDarkAppearance)
 	}
 }
 
+extension LanguageFeature : Equatable {}
 
-extension SKLanguageFeature : Equatable {}
-
-public func == (left: SKLanguageFeature, right: SKLanguageFeature) -> Bool
+public func == (left: LanguageFeature, right: LanguageFeature) -> Bool
 {
 	guard left.key == right.key			else { return false }
 	guard left.pattern == right.pattern else { return false }
@@ -152,9 +163,9 @@ public func == (left: SKLanguageFeature, right: SKLanguageFeature) -> Bool
 	return true
 }
 
-extension SKLanguageAutocompletionItem : Equatable {}
+extension LanguageAutocompletionItem : Equatable {}
 
-public func == (left: SKLanguageAutocompletionItem, right: SKLanguageAutocompletionItem) -> Bool
+public func == (left: LanguageAutocompletionItem, right: LanguageAutocompletionItem) -> Bool
 {
 	guard left.name == right.name						else { return false }
 	guard left.itemDescription == right.itemDescription else { return false }
@@ -164,9 +175,9 @@ public func == (left: SKLanguageAutocompletionItem, right: SKLanguageAutocomplet
 	return true
 }
 
-extension SKLanguage : Equatable {}
+extension Language : Equatable {}
 
-public func == (left: SKLanguage, right: SKLanguage) -> Bool
+public func == (left: Language, right: Language) -> Bool
 {
 	guard left.name == right.name else { return false }
 	guard left.suffix == right.suffix else { return false }
@@ -177,10 +188,10 @@ public func == (left: SKLanguage, right: SKLanguage) -> Bool
 
 internal extension String
 {
-	func repeated(times: Int) -> String
+	func repeated(_ times: Int) -> String
 	{
 		guard times >= 0
 			else { fatalError("The string must be repeated at least zero times.") }
-		return [String](count: times, repeatedValue: self).reduce("", combine: +)
+		return [String](repeating: self, count: times).reduce("", +)
 	}
 }

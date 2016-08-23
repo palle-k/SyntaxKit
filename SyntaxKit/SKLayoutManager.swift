@@ -26,15 +26,18 @@
 import Foundation
 import UIKit
 
-class SKLayoutManager : NSLayoutManager
+@available(*, deprecated:1.0, renamed:"LineNumberLayoutManager")
+typealias SKLayoutManager = LineNumberLayoutManager
+
+class LineNumberLayoutManager : NSLayoutManager
 {
-	private var lastParagraphNumber: Int = 0
-	private var lastParagraphLocation: Int = 0
+	fileprivate var lastParagraphNumber: Int = 0
+	fileprivate var lastParagraphLocation: Int = 0
 	internal let lineNumberWidth: CGFloat = 30.0
 	
-	override func processEditingForTextStorage(textStorage: NSTextStorage, edited editMask: NSTextStorageEditActions, range newCharRange: NSRange, changeInLength delta: Int, invalidatedRange invalidatedCharRange: NSRange)
+	override func processEditing(for textStorage: NSTextStorage, edited editMask: NSTextStorageEditActions, range newCharRange: NSRange, changeInLength delta: Int, invalidatedRange invalidatedCharRange: NSRange)
 	{
-		super.processEditingForTextStorage(textStorage, edited: editMask, range: newCharRange, changeInLength: delta, invalidatedRange: invalidatedCharRange)
+		super.processEditing(for: textStorage, edited: editMask, range: newCharRange, changeInLength: delta, invalidatedRange: invalidatedCharRange)
 		
 		if invalidatedCharRange.location < lastParagraphLocation
 		{
@@ -43,47 +46,47 @@ class SKLayoutManager : NSLayoutManager
 		}
 	}
 	
-	override func drawBackgroundForGlyphRange(glyphsToShow: NSRange, atPoint origin: CGPoint)
+	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: CGPoint)
 	{
-		super.drawBackgroundForGlyphRange(glyphsToShow, atPoint: origin)
+		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
 		
 		let font = UIFont(name: "Menlo", size: 10.0)!
-		let color = UIColor.lightGrayColor()
+		let color = UIColor.lightGray
 		
 		let attributes = [NSFontAttributeName : font, NSForegroundColorAttributeName : color]
 		
-		var numberRect = CGRectZero
+		var numberRect = CGRect.zero
 		var paragraphNumber = 0
 		
 		let ctx = UIGraphicsGetCurrentContext()
-		CGContextSetFillColorWithColor(ctx, UIColor.whiteColor().colorWithAlphaComponent(0.1).CGColor)
-		CGContextFillRect(ctx, CGRect(x: 0, y: 0, width: lineNumberWidth, height: self.textContainers[0].size.height))
+		ctx?.setFillColor(UIColor.white.withAlphaComponent(0.1).cgColor)
+		ctx?.fill(CGRect(x: 0, y: 0, width: lineNumberWidth, height: self.textContainers[0].size.height))
 		
-		self.enumerateLineFragmentsForGlyphRange(glyphsToShow)
+		self.enumerateLineFragments(forGlyphRange: glyphsToShow)
 		{ (rect, usedRect, textContainer, glyphRange, stop) in
-			let charRange = self.characterRangeForGlyphRange(glyphRange, actualGlyphRange: nil)
-			let paragraphRange = (self.textStorage!.string as NSString).paragraphRangeForRange(charRange)
+			let charRange = self.characterRange(forGlyphRange: glyphRange, actualGlyphRange: nil)
+			let paragraphRange = (self.textStorage!.string as NSString).paragraphRange(for: charRange)
 			
 			if charRange.location == paragraphRange.location
 			{
-				numberRect = CGRectOffset(CGRectMake(0, rect.origin.y, self.lineNumberWidth, rect.size.height), origin.x, origin.y)
+				numberRect = CGRect(x: 0, y: rect.origin.y, width: self.lineNumberWidth, height: rect.size.height).offsetBy(dx: origin.x, dy: origin.y)
 				paragraphNumber = self.paragraphNumber(forRange: charRange)
 				let lineNumber = "\(paragraphNumber + 1)" as NSString
-				let size = lineNumber.sizeWithAttributes(attributes)
-				lineNumber.drawInRect(CGRectOffset(numberRect, CGRectGetWidth(numberRect) - 4 - size.width, (CGRectGetHeight(numberRect) - size.height) * 0.5 + 1.0), withAttributes: attributes)
+				let size = lineNumber.size(attributes: attributes)
+				lineNumber.draw(in: numberRect.offsetBy(dx: numberRect.width - 4 - size.width, dy: (numberRect.height - size.height) * 0.5 + 1.0), withAttributes: attributes)
 			}
 		}
 		
 		if NSMaxRange(glyphsToShow) > self.numberOfGlyphs
 		{
 			let lineNumber = "\(paragraphNumber + 2)" as NSString
-			let size = lineNumber.sizeWithAttributes(attributes)
-			numberRect = CGRectOffset(numberRect, 0, CGRectGetHeight(numberRect))
-			lineNumber.drawInRect(CGRectOffset(numberRect, CGRectGetWidth(numberRect) - 4 - size.width, (CGRectGetHeight(numberRect) - size.height) * 0.5 + 1.0), withAttributes: attributes)
+			let size = lineNumber.size(attributes: attributes)
+			numberRect = numberRect.offsetBy(dx: 0, dy: numberRect.height)
+			lineNumber.draw(in: numberRect.offsetBy(dx: numberRect.width - 4 - size.width, dy: (numberRect.height - size.height) * 0.5 + 1.0), withAttributes: attributes)
 		}
 	}
 	
-	private func paragraphNumber(forRange charRange: NSRange) -> Int
+	fileprivate func paragraphNumber(forRange charRange: NSRange) -> Int
 	{
 		if charRange.location == lastParagraphLocation
 		{
@@ -95,15 +98,15 @@ class SKLayoutManager : NSLayoutManager
 			
 			var paragraphNumber = lastParagraphNumber
 			
-			string.enumerateSubstringsInRange(
-				NSRange(
+			string.enumerateSubstrings(
+				in: NSRange(
 					location: charRange.location,
 					length: lastParagraphLocation - charRange.location),
-				options: [.ByParagraphs, .SubstringNotRequired, .Reverse])
+				options: [.byParagraphs, .substringNotRequired, .reverse])
 			{ (substring, substringRange, enclosingRange, stop) in
 				if enclosingRange.location <= charRange.location
 				{
-					stop.memory = true
+					stop.pointee = true
 				}
 				paragraphNumber -= 1
 			}
@@ -117,15 +120,15 @@ class SKLayoutManager : NSLayoutManager
 			
 			var paragraphNumber = lastParagraphNumber
 			
-			string.enumerateSubstringsInRange(
-				NSRange(
+			string.enumerateSubstrings(
+				in: NSRange(
 					location: lastParagraphLocation,
 					length: charRange.location - lastParagraphLocation),
-				options: [.ByParagraphs, .SubstringNotRequired])
+				options: [.byParagraphs, .substringNotRequired])
 			{ (substring, substringRange, enclosingRange, stop) in
 				if enclosingRange.location >= charRange.location
 				{
-					stop.memory = true
+					stop.pointee = true
 				}
 				paragraphNumber += 1
 			}

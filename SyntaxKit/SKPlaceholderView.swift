@@ -8,8 +8,11 @@
 
 import UIKit
 
-class SKPlaceholderView: UIView
+@available(*, deprecated:1.0, renamed:"PlaceholderView")
+typealias SKPlaceholderView = PlaceholderView
+
+class PlaceholderView: UIView
 {
-	var string: NSAttributedString!
+	//	var string: AttributedString!
 	
 }

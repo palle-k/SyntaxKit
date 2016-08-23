@@ -9,29 +9,32 @@
 import Foundation
 import UIKit
 
-public class SKAutocompleteController : NSObject, UITableViewDataSource, UITableViewDelegate
+@available(*, deprecated:1.0, renamed:"AutocompleteController")
+public typealias SKAutocompleteController = AutocompleteController
+
+open class AutocompleteController : NSObject, UITableViewDataSource, UITableViewDelegate
 {
-	internal private(set) var autocompleteView: SKAutocompleteView!
+	internal fileprivate(set) var autocompleteView: AutocompleteView!
 	
-	init(withView view: SKAutocompleteView)
+	init(withView view: AutocompleteView)
 	{
 		self.autocompleteView = view
 		super.init()
 	}
 	
-	public func numberOfSectionsInTableView(tableView: UITableView) -> Int
+	open func numberOfSections(in tableView: UITableView) -> Int
 	{
 		return 1
 	}
 	
-	public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+	open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
 	{
 		return 0
 	}
 	
-	public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+	open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
 	{
-		let cell = tableView.dequeueReusableCellWithIdentifier("", forIndexPath: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: "", for: indexPath)
 		return cell
 	}
 }

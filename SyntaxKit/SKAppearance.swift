@@ -29,7 +29,7 @@ import Foundation
 //it only exists to allow for NSBundle(forClass: ClassForBundleLoading().dynamicType)
 private class ClassForBundleLoading
 {
-	private init()
+	fileprivate init()
 	{
 		
 	}
@@ -45,9 +45,9 @@ internal extension UIColor
 		let start = hextString.startIndex
 		guard hextString.characters.count == 7 && String(hextString[start]) == "#" else { return nil }
 		
-		let redRange = start.advancedBy(1) ... start.advancedBy(2)
-		let greenRange = start.advancedBy(3) ... start.advancedBy(4)
-		let blueRange = start.advancedBy(5) ... start.advancedBy(6)
+		let redRange = hextString.characters.index(start, offsetBy: 1) ... hextString.characters.index(start, offsetBy: 2)
+		let greenRange = hextString.characters.index(start, offsetBy: 3) ... hextString.characters.index(start, offsetBy: 4)
+		let blueRange = hextString.characters.index(start, offsetBy: 5) ... hextString.characters.index(start, offsetBy: 6)
 		
 		let redString = hextString[redRange]
 		let greenString = hextString[greenRange]
@@ -71,13 +71,13 @@ internal extension UIColor
 	}
 }
 
-private extension NSUserDefaults
+private extension UserDefaults
 {
 	subscript(key: String) -> String?
 	{
 		get
 		{
-			return self.stringForKey(key)
+			return self.string(forKey: key)
 		}
 		
 		set (new)
@@ -87,17 +87,27 @@ private extension NSUserDefaults
 	}
 }
 
-public let SKDefaultLightAppearance = "DefaultAppearanceLight"
-public let SKDefaultDarkAppearance = "DefaultAppearanceDark"
+public let DefaultLightAppearance = "DefaultAppearanceLight"
+public let DefaultDarkAppearance = "DefaultAppearanceDark"
 
-public struct SKAppearance
+
+@available(*, deprecated:1.0, renamed:"DefaultLightAppearance")
+public let SKDefaultLightAppearance = DefaultLightAppearance
+
+@available(*, deprecated:1.0, renamed:"DefaultDarkAppearance")
+public let SKDefaultDarkAppearance = DefaultDarkAppearance
+
+@available(*, deprecated:1.0, renamed:"Appearance")
+public typealias SKAppearance = Appearance
+
+public struct Appearance
 {
-	private static var didCheckForDefaultsLoaded = false
+	fileprivate static var didCheckForDefaultsLoaded = false
 	
-	private static func ColorForKey(themeName: String, key: SKColorKey) -> UIColor!
+	fileprivate static func ColorForKey(_ themeName: String, key: ColorKey) -> UIColor!
 	{
 		let customKey = "com.palleklewitz.SyntaxKit.\(themeName).\(key.rawValue)"
-		let defaults = NSUserDefaults.standardUserDefaults()
+		let defaults = UserDefaults.standard
 		
 		if let customColor = UIColor.color(withString: defaults[customKey])
 		{
@@ -105,13 +115,13 @@ public struct SKAppearance
 		}
 		else
 		{
-			let defaultKey = "com.palleklewitz.SyntaxKit.\(SKDefaultLightAppearance).\(key.rawValue)"
+			let defaultKey = "com.palleklewitz.SyntaxKit.\(DefaultLightAppearance).\(key.rawValue)"
 			guard let defaultColor = UIColor.color(withString: defaults[defaultKey])
 			else
 			{
 				if key == .Custom
 				{
-					return .whiteColor()
+					return .white
 				}
 				if let fallback = key.fallback
 				{
@@ -137,89 +147,89 @@ public struct SKAppearance
 	
 	internal static func ResetDefaultSchemes()
 	{
-		let defaults = NSUserDefaults.standardUserDefaults()
-		SKColorKey.values.forEach { (key) in
-			let defaultKeyLight = "com.palleklewitz.SyntaxKit.\(SKDefaultLightAppearance).\(key.rawValue)"
-			let defaultKeyDark = "com.palleklewitz.SyntaxKit.\(SKDefaultDarkAppearance).\(key.rawValue)"
-			defaults.removeObjectForKey(defaultKeyLight)
-			defaults.removeObjectForKey(defaultKeyDark)
+		let defaults = UserDefaults.standard
+		ColorKey.values.forEach { (key) in
+			let defaultKeyLight = "com.palleklewitz.SyntaxKit.\(DefaultLightAppearance).\(key.rawValue)"
+			let defaultKeyDark = "com.palleklewitz.SyntaxKit.\(DefaultDarkAppearance).\(key.rawValue)"
+			defaults.removeObject(forKey: defaultKeyLight)
+			defaults.removeObject(forKey: defaultKeyDark)
 		}
 	}
 	
-	private static func LoadLightAppearance()
+	fileprivate static func LoadLightAppearance()
 	{
-		let bundle = NSBundle(forClass: ClassForBundleLoading().dynamicType)
+		let bundle = Bundle(for: type(of: ClassForBundleLoading()))
 		guard
-			let dataPath = bundle.pathForResource(SKDefaultLightAppearance, ofType: "strings"),
+			let dataPath = bundle.path(forResource: DefaultLightAppearance, ofType: "strings"),
 			let values = NSDictionary(contentsOfFile: dataPath)
 		else { fatalError("Default Appearance could not be loaded.") }
 		
-		let defaults = NSUserDefaults.standardUserDefaults()
+		let defaults = UserDefaults.standard
 		
-		for key in SKColorKey.values
+		for key in ColorKey.values
 		{
 			guard let colorString = values[key.rawValue] as? String else
 			{
 				continue
 			}
-			defaults["com.palleklewitz.SyntaxKit.\(SKDefaultLightAppearance).\(key.rawValue)"] = colorString
+			defaults["com.palleklewitz.SyntaxKit.\(DefaultLightAppearance).\(key.rawValue)"] = colorString
 		}
 	}
 	
-	private static func LoadDarkAppearance()
+	fileprivate static func LoadDarkAppearance()
 	{
-		let bundle = NSBundle(forClass: ClassForBundleLoading().dynamicType)
+		let bundle = Bundle(for: type(of: ClassForBundleLoading()))
 		guard
-			let dataPath = bundle.pathForResource(SKDefaultDarkAppearance, ofType: "strings"),
+			let dataPath = bundle.path(forResource: DefaultDarkAppearance, ofType: "strings"),
 			let values = NSDictionary(contentsOfFile: dataPath)
 		else { fatalError("Default Appearance could not be loaded.") }
 		
-		let defaults = NSUserDefaults.standardUserDefaults()
+		let defaults = UserDefaults.standard
 		
-		for key in SKColorKey.values
+		for key in ColorKey.values
 		{
 			guard let colorString = values[key.rawValue] as? String
 			else
 			{
 				continue
 			}
-			defaults["com.palleklewitz.SyntaxKit.\(SKDefaultDarkAppearance).\(key.rawValue)"] = colorString
+			defaults["com.palleklewitz.SyntaxKit.\(DefaultDarkAppearance).\(key.rawValue)"] = colorString
 		}
 	}
 	
 	public let font: UIFont
-	public internal(set) var colorTheme: [SKColorKey : UIColor]
+	public internal(set) var colorTheme: [ColorKey : UIColor]
 	public let themeName: String
 	
 	public init(themeName: String)
 	{
 		let font = UIFont(name: "Menlo", size: 14.0)!
 		self.font = font
-		var colorTheme: [SKColorKey : UIColor] = [:]
+		var colorTheme: [ColorKey : UIColor] = [:]
 		
-		for key in SKColorKey.values
+		for key in ColorKey.values
 		{
-			colorTheme[key] = SKAppearance.ColorForKey(themeName, key: key)
+			colorTheme[key] = Appearance.ColorForKey(themeName, key: key)
 		}
 		
 		self.colorTheme = colorTheme
 		self.themeName = themeName
 	}
 	
-	public mutating func setColor(color: UIColor, forKey key: SKColorKey)
+	public mutating func setColor(_ color: UIColor, forKey key: ColorKey)
 	{
 		let customKey = "com.palleklewitz.SyntaxKit.\(themeName).\(key.rawValue)"
-		let defaults = NSUserDefaults.standardUserDefaults()
-		defaults.setObject(color.colorString, forKey: customKey)
+		let defaults = UserDefaults.standard
+		defaults.set(color.colorString, forKey: customKey)
 		colorTheme[key] = color
 	}
 	
-	public func color(forKey key: SKColorKey) -> UIColor
+	public func color(forKey key: ColorKey) -> UIColor
 	{
-		return self.dynamicType.ColorForKey(self.themeName, key: key)
+		return type(of: self).ColorForKey(self.themeName, key: key)
 	}
 	
-	public subscript(key: SKColorKey) -> UIColor
+	public subscript(key: ColorKey) -> UIColor
 	{
 		get
 		{
@@ -235,7 +245,7 @@ public struct SKAppearance
 	public mutating func load(fromStringsFileAtPath path: String)
 	{
 		guard let values = NSDictionary(contentsOfFile: path) else { return }
-		for key in SKColorKey.values
+		for key in ColorKey.values
 		{
 			guard let colorString = values[key.rawValue] as? String,
 			let color = UIColor.color(withString: colorString)
@@ -249,7 +259,10 @@ public struct SKAppearance
 	}
 }
 
-public enum SKColorKey : String
+@available(*, deprecated:1.0, renamed:"ColorKey")
+public typealias SKColorKey = ColorKey
+
+public enum ColorKey : String
 {
 	case PlainText = "SKColorPlainTextKey"
 	case Background = "SKColorBackgroundKey"
@@ -262,7 +275,7 @@ public enum SKColorKey : String
 	case Operator = "SKColorOperatorKey"
 	case Annotation = "SKColorAnnotationKey"
 	
-	case Type = "SKColorTypeKey"
+	case `Type` = "SKColorTypeKey"
 	case TypeDeclaration = "SKColorTypeDeclarationKey"
 	case Generics = "SKColorGenericTypeKey"
 	
@@ -317,9 +330,9 @@ public enum SKColorKey : String
 	case Custom = "SKColorKeyCustom"
 	
 	
-	static let values:[SKColorKey] = [.Annotation, .Attribute, .Background, .Background, .Character, .CharacterEscapeSequence, .Class, .Comment, .CommentTag, .Constant, .ControlCharacter, .DocumentationComment, .DocumentationCommentParameter, .DocumentationCommentValue, .FunctionCall, .FunctionDeclaration, .Generics, .GlobalVariable, .GlobalFunctionCall, .GlobalFunctionDeclaration, .GlobalVariableDeclaration, .Hyperlink, .Identifier, .InstanceVariable, .InstanceVariableDeclaration, .Keyword, .Label, .LineNumber, .LineNumberBackground, .MultilineComment, .MultilineDocumentationComment, .Number, .Operator, .PlainText, .Selector, .StaticFunctionCall, .StaticFunctionDeclaration, .StaticVariable, .StaticVariableDeclaration, .String, .StringEscapeSequence, .StringFormatSequence, .Type, .TypeDeclaration, .Variable]
+	static let values:[ColorKey] = [.Annotation, .Attribute, .Background, .Background, .Character, .CharacterEscapeSequence, .Class, .Comment, .CommentTag, .Constant, .ControlCharacter, .DocumentationComment, .DocumentationCommentParameter, .DocumentationCommentValue, .FunctionCall, .FunctionDeclaration, .Generics, .GlobalVariable, .GlobalFunctionCall, .GlobalFunctionDeclaration, .GlobalVariableDeclaration, .Hyperlink, .Identifier, .InstanceVariable, .InstanceVariableDeclaration, .Keyword, .Label, .LineNumber, .LineNumberBackground, .MultilineComment, .MultilineDocumentationComment, .Number, .Operator, .PlainText, .Selector, .StaticFunctionCall, .StaticFunctionDeclaration, .StaticVariable, .StaticVariableDeclaration, .String, .StringEscapeSequence, .StringFormatSequence, .Type, .TypeDeclaration, .Variable]
 	
-	var fallback:SKColorKey?
+	var fallback:ColorKey?
 	{
 		switch self
 		{

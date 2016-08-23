@@ -10,14 +10,17 @@ import Foundation
 import QuartzCore
 import UIKit
 
-internal class SKAutocompleteView: UITableView
+@available(*, deprecated:1.0, renamed:"AutocompleteView")
+typealias SKAutocompleteView = AutocompleteView
+
+internal class AutocompleteView: UITableView
 {
-	override func willMoveToSuperview(newSuperview: UIView?)
+	override func willMove(toSuperview newSuperview: UIView?)
 	{
 		self.layer.borderWidth = 1.0
-		self.layer.borderColor = UIColor.grayColor().CGColor
+		self.layer.borderColor = UIColor.gray.cgColor
 		self.layer.cornerRadius = 3.0
-		self.backgroundColor = UIColor.whiteColor()
+		self.backgroundColor = UIColor.white
 		self.frame.size.width = 400
 		self.frame.size.height = 300
 	}

@@ -131,12 +131,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Palle Klewitz";
 				TargetAttributes = {
 					E67734D21CCC0B8200A915CF = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = BPTAR52LQF;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -296,6 +297,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -313,6 +315,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.palleklewitz.SyntaxKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

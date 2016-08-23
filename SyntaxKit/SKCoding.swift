@@ -17,21 +17,21 @@ internal protocol SKEncoding
 
 internal extension NSCoder
 {
-	func encodeValue(value: SKEncoding, forKey key: String? = nil)
+	func encodeValue(_ value: SKEncoding, forKey key: String? = nil)
 	{
 		if let key = key
 		{
-			self.encodeObject(value.codingDictionary, forKey: key)
+			self.encode(value.codingDictionary, forKey: key)
 		}
 		else
 		{
-			self.encodeObject(value.codingDictionary)
+			self.encode(value.codingDictionary)
 		}
 	}
 	
 	func decodeValue<Type : SKEncoding>(ofType type: Type.Type, forKey key: String? = nil) -> Type?
 	{
-		if let key = key, codingDictionary = self.decodeObjectForKey(key) as? NSDictionary
+		if let key = key, let codingDictionary = self.decodeObject(forKey: key) as? NSDictionary
 		{
 			return Type.init(codingDictionary: codingDictionary)
 		}
@@ -43,7 +43,7 @@ internal extension NSCoder
 	}
 }
 
-extension SKLanguageFeature : SKEncoding
+extension LanguageFeature : SKEncoding
 {
 	init?(codingDictionary: NSDictionary)
 	{
@@ -56,24 +56,24 @@ extension SKLanguageFeature : SKEncoding
 		self.key = key
 		self.pattern = pattern
 		self.color = color
-		self.colorKey = SKColorKey(rawValue: colorKeyString)
+		self.colorKey = ColorKey(rawValue: colorKeyString)
 	}
 	
 	var codingDictionary: NSDictionary
 	{
 		var dictionary:[String : AnyObject] = [:]
-		dictionary["key"] = key
-		dictionary["pattern"] = pattern
+		dictionary["key"] = key as NSString
+		dictionary["pattern"] = pattern as NSString
 		dictionary["color"] = color
 		if let colorKey = colorKey
 		{
-			dictionary["colorkey"] = colorKey.rawValue
+			dictionary["colorkey"] = colorKey.rawValue as NSString
 		}
-		return dictionary
+		return dictionary as NSDictionary
 	}
 }
 
-extension SKLanguage : SKEncoding
+extension Language : SKEncoding
 {
 	init?(codingDictionary: NSDictionary)
 	{
@@ -86,13 +86,13 @@ extension SKLanguage : SKEncoding
 		else { return nil }
 		self.name = name
 		self.suffix = suffix
-		guard let appearance = SKAppearance(codingDictionary: appearanceDictionary) else { return nil }
+		guard let appearance = Appearance(codingDictionary: appearanceDictionary) else { return nil }
 		self.appearance = appearance
 		self.features = features.flatMap
 		{
 			if let codingDictionary = $0 as? NSDictionary
 			{
-				return SKLanguageFeature(codingDictionary: codingDictionary)
+				return LanguageFeature(codingDictionary: codingDictionary)
 			}
 			else
 			{
@@ -103,7 +103,7 @@ extension SKLanguage : SKEncoding
 		{
 			if let codingDictionary = $0 as? NSDictionary
 			{
-				return SKLanguageAutocompletionItem(codingDictionary: codingDictionary)
+				return LanguageAutocompletionItem(codingDictionary: codingDictionary)
 			}
 			else
 			{
@@ -116,17 +116,17 @@ extension SKLanguage : SKEncoding
 	{
 		var dictionary:[String : AnyObject] = [:]
 		
-		dictionary["name"] = name
-		dictionary["suffix"] = suffix
+		dictionary["name"] = name as NSString
+		dictionary["suffix"] = suffix as NSString
 		dictionary["appearance"] = appearance.codingDictionary
-		dictionary["features"] = features.map { $0.codingDictionary }
-		dictionary["completionitems"] = completionItems.map { $0.codingDictionary }
+		dictionary["features"] = features.map { $0.codingDictionary } as NSArray
+		dictionary["completionitems"] = completionItems.map { $0.codingDictionary } as NSArray
 		
-		return dictionary
+		return dictionary as NSDictionary
 	}
 }
 
-extension SKAppearance : SKEncoding
+extension Appearance : SKEncoding
 {
 	init?(codingDictionary: NSDictionary)
 	{
@@ -137,8 +137,8 @@ extension SKAppearance : SKEncoding
 		else { return nil }
 		self.font = font
 		let colorThemeData = colorTheme.flatMap
-		{ key, value -> (SKColorKey, UIColor)? in
-			guard let key = key as? String, value = value as? UIColor, colorKey = SKColorKey(rawValue: key) else { return nil }
+		{ key, value -> (ColorKey, UIColor)? in
+			guard let key = key as? String, let value = value as? UIColor, let colorKey = ColorKey(rawValue: key) else { return nil }
 			return (colorKey, value)
 		}
 		self.colorTheme = [:]
@@ -155,7 +155,7 @@ extension SKAppearance : SKEncoding
 	}
 }
 
-extension SKLanguageAutocompletionItem : SKEncoding
+extension LanguageAutocompletionItem : SKEncoding
 {
 	init?(codingDictionary: NSDictionary)
 	{
@@ -177,12 +177,12 @@ extension SKLanguageAutocompletionItem : SKEncoding
 	{
 		var dictionary:[String:AnyObject] = [:]
 		
-		dictionary["name"] = name
-		dictionary["description"] = itemDescription
-		dictionary["searchtags"] = searchTags
-		dictionary["insertiontext"] = insertionText
-		dictionary["scope"] = scope
+		dictionary["name"] = name as NSString
+		dictionary["description"] = itemDescription as NSString?
+		dictionary["searchtags"] = searchTags as NSArray
+		dictionary["insertiontext"] = insertionText as NSString
+		dictionary["scope"] = scope as NSString?
 		
-		return dictionary
+		return dictionary as NSDictionary
 	}
 }
