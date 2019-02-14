@@ -1,6 +1,6 @@
 # SyntaxKit
 
-Syntax highlighting, line numbers, auto-indentation (and autocomplete coming soon) for iOS.
+Syntax highlighting, line numbers, auto-indentation for iOS.
 
 ## Using SyntaxKit
 - Clone or download SyntaxKit
